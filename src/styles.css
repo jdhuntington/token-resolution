@@ -1,0 +1,15 @@
+.App {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 8px;
+  align-items: center;
+}
+
+.Color {
+  max-width: 200px;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-gap: 8px;
+  justify-items: end;
+  align-items: center;
+}
