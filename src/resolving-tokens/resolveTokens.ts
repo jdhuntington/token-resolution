@@ -1,4 +1,4 @@
-const firstDefined = (...args) => {
+const firstDefined = (...args: any[]) => {
   for (let arg of args) {
     if (typeof arg !== "undefined") {
       return arg;
@@ -7,15 +7,15 @@ const firstDefined = (...args) => {
   return undefined;
 };
 
-const resolveToken = (tokenDefinition, theme, tokens) => {};
+const resolveToken = (tokenDefinition: any, theme: any, tokens: any) => {};
 
-const isTokenResolved = tokenValue => {
+const isTokenResolved = (tokenValue: any) => {
   const tokenType = typeof tokenValue;
 
   return tokenType === "number" || tokenType === "string";
 };
 
-export const resolveTokens = (theme, sourceTokens) => {
+export const resolveTokens = (theme: any, sourceTokens: any) => {
   const resolvedTokens = {};
 
   for (let i = 0; i < 10; i++) {
@@ -25,28 +25,28 @@ export const resolveTokens = (theme, sourceTokens) => {
     for (let tokenName in sourceTokens) {
       const sourceValue = sourceTokens[tokenName];
 
-      if (!resolvedTokens[tokenName]) {
+      if (!(resolvedTokens as any)[tokenName]) {
       }
 
-      let tokenValue = (resolvedTokens[tokenName] = firstDefined(
-        resolvedTokens[tokenName],
+      let tokenValue = ((resolvedTokens as any)[tokenName] = firstDefined(
+        (resolvedTokens as any)[tokenName],
         sourceTokens[tokenName]
       ));
       const tokenType = typeof tokenValue;
 
       // If we have literal, copy it to the resolved set.
       if (tokenType === "object") {
-        resolvedTokens[tokenName] = resolveToken(
+        (resolvedTokens as any)[tokenName] = resolveToken(
           tokenValue,
           theme,
           resolvedTokens
         );
       } else if (tokenType === "function") {
-        resolvedTokens[tokenName] = tokenValue(theme, resolvedTokens);
+        (resolvedTokens as any)[tokenName] = tokenValue(theme, resolvedTokens);
       }
 
       anyUnresolved =
-        anyUnresolved || !isTokenResolved(resolvedTokens[tokenName]);
+        anyUnresolved || !isTokenResolved((resolvedTokens as any)[tokenName]);
     }
 
     if (!anyUnresolved) {
@@ -57,14 +57,14 @@ export const resolveTokens = (theme, sourceTokens) => {
   return resolvedTokens;
 };
 
-const color = value => ({
+const color = (value: any) => ({
   type: "color",
   value
 });
 
-const hoverOn = value => ({});
+const hoverOn = (value: any) => ({});
 
-const textColor = value => ({
+const textColor = (value: any) => ({
   type: "color",
   value
 });
