@@ -17,7 +17,7 @@ describe("resolveTokens", () => {
           }
         },
         {
-          value: t => t.colors.brand[t.colors.brand.median]
+          value: (t: any) => t.colors.brand[t.colors.brand.median]
         }
       )
     ).toEqual({ value: "#bbb" });
@@ -31,7 +31,7 @@ describe("resolveTokens", () => {
           value: "abc",
           value2: {
             dependsOn: ["value"],
-            resolve: (theme, [value]) => value + "def"
+            resolve: (theme: any, [value]: any) => value + "def"
           }
         }
       )
@@ -52,9 +52,9 @@ describe("resolveTokens", () => {
         {
           value2: {
             dependsOn: ["value"],
-            resolve: (theme, [value]) => value + "def"
+            resolve: (theme: any, [value]: any) => value + "def"
           },
-          value: t => t.colors.brand
+          value: (t: any) => t.colors.brand
         }
       )
     ).toEqual({ value: "abc", value2: "abcdef" });
