@@ -12,17 +12,18 @@ describe("resolveTokens", () => {
   it("can resolve a literal", () => {
     expect(resolveTokens({}, [{ value: "abc" }])).toEqual({ value: "abc" });
   });
-  /*
   it("can resolve a color from the theme", () => {
     expect(
-      resolveTokens(
-        theme,
-        {
-          value: (t: any) => t.colors.brand.value[t.colors.brand.median]
+      resolveTokens(theme, [
+        (t: any) => {
+          return {
+            value: t.colors.brand.value[t.colors.brand.median]
+          };
         }
-      )
+      ])
     ).toEqual({ value: "#bbb" });
   });
+  /*
 
   it("can resolve a token related to another", () => {
     expect(
