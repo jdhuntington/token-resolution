@@ -31,7 +31,7 @@ describe("resolveTokens", () => {
           value: "abc",
           value2: {
             dependsOn: ["value"],
-            resolve: (theme: any, [value]: any) => value + "def"
+            resolve: (theme: any, [value]: any) => value.value + "def"
           }
         }
       )
@@ -52,11 +52,11 @@ describe("resolveTokens", () => {
         {
           value2: {
             dependsOn: ["value"],
-            resolve: (theme: any, [value]: any) => value + "def"
+            resolve: (theme: any, [value]: any) => value.value + "def"
           },
-          value: (t: any) => t.colors.brand
+          value: (t: any) => t.colors.brand.value[0]
         }
       )
-    ).toEqual({ value: "abc", value2: "abcdef" });
+    ).toEqual({ value: "#aaa", value2: "#aaadef" });
   });
 });
