@@ -1,4 +1,4 @@
-import { resolveTokens } from "./middleware";
+import { resolveTokens, ResolvedTokens } from "./middleware";
 
 const theme = {
   colors: {
@@ -12,6 +12,7 @@ describe("resolveTokens", () => {
   it("can resolve a literal", () => {
     expect(resolveTokens({}, [{ value: "abc" }])).toEqual({ value: "abc" });
   });
+
   it("can resolve a color from the theme", () => {
     expect(
       resolveTokens(theme, [
@@ -23,23 +24,24 @@ describe("resolveTokens", () => {
       ])
     ).toEqual({ value: "#bbb" });
   });
-  /*
 
   it("can resolve a token related to another", () => {
     expect(
-      resolveTokens(
-        {},
+      resolveTokens({}, [
         {
-          value: "abc",
-          value2: {
-            dependsOn: ["value"],
-            resolve: (theme: any, [value]: any) => value.value + "def"
-          }
+          value: "abc"
+        },
+        (theme: any, tokens: ResolvedTokens) => {
+          return {
+            ...tokens,
+            value2: tokens.value + "def"
+          };
         }
-      )
+      ])
     ).toEqual({ value: "abc", value2: "abcdef" });
   });
 
+  /*
   it("can resolve a token related to a late resolving dependency", () => {
     expect(
       resolveTokens(

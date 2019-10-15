@@ -8,9 +8,13 @@ export const resolveTokens = (
   theme: any,
   tokenSet: TokenSet
 ): ResolvedTokens => {
-  const thisToken = tokenSet[0];
-  if (typeof thisToken === "function") {
-    return thisToken(theme);
-  }
-  return tokenSet[0];
+  let resolvedTokens: ResolvedTokens = {};
+  tokenSet.forEach(token => {
+    if (typeof token === "function") {
+      resolvedTokens = token(theme, resolvedTokens);
+    } else {
+      resolvedTokens = token;
+    }
+  });
+  return resolvedTokens;
 };
