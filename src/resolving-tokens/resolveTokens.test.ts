@@ -17,7 +17,7 @@ describe("resolveTokens", () => {
           }
         },
         {
-          value: (t: any) => t.colors.brand[t.colors.brand.median]
+          value: (t: any) => t.colors.brand.value[t.colors.brand.median]
         }
       )
     ).toEqual({ value: "#bbb" });

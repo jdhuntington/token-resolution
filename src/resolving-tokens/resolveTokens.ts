@@ -1,70 +1,53 @@
-const firstDefined = (...args: any[]) => {
-  for (let arg of args) {
-    if (typeof arg !== "undefined") {
-      return arg;
-    }
+interface Token {
+  resolve(theme: any): void;
+  value: any;
+}
+
+class StringToken implements Token {
+  constructor(public name: string, public value: string) {}
+  resolve(theme: any): void {}
+}
+
+class FunctionToken implements Token {
+  public value: any;
+  constructor(public name: string, public valueFn: (theme: any) => any) {}
+
+  resolve(theme: any): void {
+    this.value = this.valueFn(theme);
   }
-  return undefined;
-};
+}
 
-const resolveToken = (tokenDefinition: any, theme: any, tokens: any) => {};
+class TokenFactory {
+  static from(rawToken: any, name: string): Token {
+    if (typeof rawToken === "string") {
+      return new StringToken(name, rawToken);
+    }
+    if (typeof rawToken === "function") {
+      return new FunctionToken(name, rawToken);
+    }
+    throw new Error("Unknown token type");
+  }
+}
 
-const isTokenResolved = (tokenValue: any) => {
-  const tokenType = typeof tokenValue;
-
-  return tokenType === "number" || tokenType === "string";
-};
+type TokenDict = { [name: string]: Token };
 
 export const resolveTokens = (theme: any, sourceTokens: any) => {
-  const resolvedTokens = {};
+  const tokens: TokenDict = {};
+
+  for (let tokenName in sourceTokens) {
+    tokens[tokenName] = TokenFactory.from(sourceTokens[tokenName], tokenName);
+  }
 
   for (let i = 0; i < 10; i++) {
-    let anyUnresolved = false;
-
-    // Iterate through source tokens.
-    for (let tokenName in sourceTokens) {
-      const sourceValue = sourceTokens[tokenName];
-
-      if (!(resolvedTokens as any)[tokenName]) {
-      }
-
-      let tokenValue = ((resolvedTokens as any)[tokenName] = firstDefined(
-        (resolvedTokens as any)[tokenName],
-        sourceTokens[tokenName]
-      ));
-      const tokenType = typeof tokenValue;
-
-      // If we have literal, copy it to the resolved set.
-      if (tokenType === "object") {
-        (resolvedTokens as any)[tokenName] = resolveToken(
-          tokenValue,
-          theme,
-          resolvedTokens
-        );
-      } else if (tokenType === "function") {
-        (resolvedTokens as any)[tokenName] = tokenValue(theme, resolvedTokens);
-      }
-
-      anyUnresolved =
-        anyUnresolved || !isTokenResolved((resolvedTokens as any)[tokenName]);
-    }
-
-    if (!anyUnresolved) {
-      return resolvedTokens;
+    for (let tokenName in tokens) {
+      tokens[tokenName].resolve(theme);
     }
   }
 
-  return resolvedTokens;
+  const result: any = {};
+  for (let tokenName in tokens) {
+    result[tokenName] = tokens[tokenName].value;
+  }
+
+  return result;
 };
-
-const color = (value: any) => ({
-  type: "color",
-  value
-});
-
-const hoverOn = (value: any) => ({});
-
-const textColor = (value: any) => ({
-  type: "color",
-  value
-});
