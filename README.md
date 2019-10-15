@@ -52,12 +52,12 @@ There are 2 approaches in this repo, `resolving-tokens` and `middleware`. Qualit
 
 | Category       | Aspect                | `resolving-tokens`                           | `middleware`                   |
 | -------------- | --------------------- | -------------------------------------------- | ------------------------------ |
-| Ergonomics     | Feel                  | MINUS ([ref](resolving-tokens-feel))         | MINUS ([ref](middleware-feel)) |
-| Functionality  | Interdependent tokens | PLUS                                         | PLUS                           |
-| Functionality  | Object literals       | PLUS                                         | PLUS                           |
-| Functionality  | Theme based values    | PLUS                                         | PLUS                           |
-| Functionality  | Token modification    | MINUS ([ref](resolving-tokens-modification)) | PLUS                           |
-| Implementation | Complexity            | PLUS                                         | PLUS                           |
+| Ergonomics     | Feel                  | :x: ([ref](#resolving-tokens-feel))         | :x: ([ref](#middleware-feel)) |
+| Functionality  | Interdependent tokens | :white_check_mark:                                         | :white_check_mark:                           |
+| Functionality  | Object literals       | :white_check_mark:                                         | :white_check_mark:                           |
+| Functionality  | Theme based values    | :white_check_mark:                                         | :white_check_mark:                           |
+| Functionality  | Token modification    | :x: ([ref](#resolving-tokens-modification)) | :white_check_mark:                           |
+| Implementation | Complexity            | :white_check_mark:                                         | :white_check_mark:                           |
 
 ### resolving-tokens-feel
 
