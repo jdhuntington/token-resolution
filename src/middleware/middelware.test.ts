@@ -1,4 +1,9 @@
-import { resolveTokens, ResolvedTokens } from "./middleware";
+import {
+  resolveTokens,
+  ResolvedTokens,
+  TokenFn,
+  TokenCallback
+} from "./middleware";
 
 const theme = {
   colors: {
@@ -24,14 +29,14 @@ describe("resolveTokens", () => {
       ])
     ).toEqual({ value: "#bbb" });
   });
-
-  it("can resolve a token related to another", () => {
+  it("can resolve a token with a late resolving dependency", () => {
     expect(
       resolveTokens({}, [
         {
           value: "abc"
         },
-        (theme: any, tokens: ResolvedTokens) => {
+        (theme: any, baseTokens: ResolvedTokens, next: TokenCallback) => {
+          const tokens = next(baseTokens);
           return {
             ...tokens,
             value2: tokens.value + "def"
@@ -41,27 +46,23 @@ describe("resolveTokens", () => {
     ).toEqual({ value: "abc", value2: "abcdef" });
   });
 
-  /*
-  it("can resolve a token related to a late resolving dependency", () => {
+  it("can resolve a token with an early resolving dependency", () => {
     expect(
-      resolveTokens(
-        {
-          colors: {
-            brand: {
-              median: 1,
-              value: ["#aaa", "#bbb", "#ccc"]
-            }
-          }
+      resolveTokens(theme, [
+        (theme: any, tokens: ResolvedTokens) => {
+          console.log({ tokens });
+          return {
+            ...tokens,
+            value2: tokens.value + "def"
+          };
         },
-        {
-          value2: {
-            dependsOn: ["value"],
-            resolve: (theme: any, [value]: any) => value.value + "def"
-          },
-          value: (t: any) => t.colors.brand.value[0]
+        (t: any, tokens: ResolvedTokens, next: TokenCallback) => {
+          return next({
+            ...tokens,
+            value: t.colors.brand.value[t.colors.brand.median]
+          });
         }
-      )
-    ).toEqual({ value: "#aaa", value2: "#aaadef" });
+      ])
+    ).toEqual({ value: "#bbb", value2: "#bbbdef" });
   });
-  */
 });
