@@ -14,35 +14,112 @@ and how various APIs feel to use.
 
 # What do tokens look like?
 
-At the most basic level, tokens are an object literal, or a function that return values from a provided `theme`.
-Some obvious implementations of tokens are...
+At the most basic level, tokens can be:
+
+1. A string or number representing a css replacement value.
+
+```
+const tokens = {
+  boxSize: 16
+};
+
+2. A resolver function (FastDNA refers to this as a recipe), which takes in theme and returns a literal.
 
 ```ts
-// return a const set of tokens
-const tokens = () => {
-  return {
-    baseColor: "#fff"
-  };
-};
-
-// return a set of tokens based on a theme
-const tokens = (theme: Theme) => {
-  return {
-    baseColor: theme.colors.base
-  };
-};
-
-// return individual tokens based on a theme
 const tokens = {
-  baseColor: (theme: Theme) => theme.colors.base
+  boxSize: theme => theme.sizing.base * 2
 };
 ```
 
-As components are developed, individual layers become separated in time and space. For example, `baseColor` might
-be defined in a basic design layer, then overridden in an application-specific implementation of the component.
+3. An object describing token dependencies, coupled with a resolver function:
 
-The semantics of how layers interact and how tokens become dependent on one another is non-trivial, so multiple
-prototypes exist to examine approaches.
+```ts
+const tokens = {
+  boxSize: 16,
+  iconSize: {
+    dependsOn: [ 'boxSize' ]
+    resolve: ([boxSize], theme) => boxSize - 2
+  }
+};
+```
+
+Dependent tokens can be chained:
+
+```ts
+const tokens = {
+  background: theme => theme.brand,
+  backgroundHover: { 
+    dependsOn: ['background'], 
+    resolve: ([background], theme) => softer(background),
+  },
+  backgroundPressed: {
+    dependsOn: ['backgroundHover'],
+    resolve: ([backgroundHover], theme) => softer(backgroundHover)
+  }
+};
+```
+
+Note that for dependencies, they can take a single dependency where the resolve will pass along the single value:
+
+```json
+{
+  dependsOn: 'background',
+  resolve: background => lighter(background)
+}
+```
+
+Or an array of dependencies, where resolve will pass along the resolved array:
+
+```json
+{
+  dependsOn: [ 'gap', 'iconSize' ],
+  resolve: ([gap, iconsize]) => gap + iconSize
+}
+```
+
+## How do they layer?
+
+As components are developed, individual layers become separated in time and space. For example, `baseColor` might
+be defined in a basic design layer, then overridden either through recomposition or theming.
+
+Recomposition:
+
+```ts
+const Button = compose(BaseButton, {
+  tokens: {
+    background: ({color}) => color.neutral,
+    backgroundHover: { dependsOn: 'background', resolve: bg => softer(bg) }
+  }
+});
+
+// Recomposes with a different background, reuses the hover dependency of the base.
+const PrimaryButton = compose(Button, {
+  tokens: {
+    background: ({color}) => color.brand
+  }
+});
+```
+
+Theming:
+
+```ts
+const Button = compose(BaseButton, {
+  tokens: {
+    background: ({color}) => color.neutral,
+    backgroundHover: { dependsOn: 'background', resolve: bg => softer(bg) }
+  }
+});
+
+loadTheme({
+  components: {
+    Button: {
+      tokens: {
+        background: 'red' // Reuses the hover dependency of the base.
+      }
+    }
+  }
+});      
+```
 
 # Approaches
 
